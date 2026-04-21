@@ -1,0 +1,375 @@
+import os
+import streamlit as st
+from dotenv import load_dotenv
+import openai
+from streamlit_option_menu import option_menu
+
+
+load_dotenv()
+OPENAI_API_KEY=os.getenv("OPENAI_API_KEY")
+openai.api_key=OPENAI_API_KEY
+
+class chatbot:
+    mentalhealth_responses = {
+
+    "stress":
+    "Yes, it's completely normal to feel stressed, especially with STEM pressure. Stress usually appears when you have heavy responsibilities or fear of results. The important thing is not to let stress control you. Try breaking your study into small tasks and use a system like 25 minutes study and 5 minutes break. Over time, you'll feel calmer and more in control.",
+
+    "frustration":
+    "This feeling is very normal when you put effort but don't see immediate results. Learning is a gradual process and improvement is often not visible right away. Even if you feel stuck, you are still improving internally. Try reviewing your progress regularly and compare what you understood before with what you understand now.",
+
+    "motivation":
+    "Losing motivation is common under constant pressure and it doesn't mean you are failing. Sometimes your brain just needs rest instead of more pressure. Try starting with a very small step like 10 minutes of studying. Once you start, motivation will gradually come back. Consistency matters more than motivation.",
+
+    "oversleeping":
+    "Oversleeping or fatigue can be caused by stress or poor daily routine. Try to fix your sleep schedule by sleeping and waking up at consistent times. Also reduce phone usage before sleep. Balance your day between study and rest so your body doesn't feel overloaded.",
+
+    "eating":
+    "Changes in eating habits under stress are very common as a psychological response. Try to return to a simple and consistent eating routine, even if it's light meals. Your body needs stability to help you think and study better.",
+
+    "anger":
+    "Anger is usually caused by accumulated stress or exhaustion. When you feel angry, try to pause for a moment, take a deep breath, and step away before responding. Emotional control improves with practice over time.",
+
+    "fear":
+    "Fear is completely normal, especially with academic pressure. The problem happens when fear stops you from acting. Try focusing only on the current step instead of thinking about all possible scenarios. Every small step brings you closer to safety and confidence.",
+
+    "confidence":
+    "Low self-confidence often comes from comparing yourself to others, which is unfair. Everyone has their own path. Instead of focusing on others, focus on your own progress, even if it's small. Every achievement is proof that you are capable.",
+
+    "focus":
+    "Distraction usually happens because of too many interruptions or mental overload. Try focusing on one task at a time and turn off notifications. Focus is a skill that improves with training, not something fixed."
+} 
+    study_tips_responses = {
+ "arabic": ["""
+- دي تعتبر أهم مادة من أهم المواد كلها، وبتقدر ترفع مجموعك بشكل كبير جدًا  
+- ابدأ بفهم الدرس كويس قبل الحفظ  
+- كل يوم خُد درس واحد واحفظه كويس مع فهمه  
+- أهم حاجة الحفظ المستمر وعدم اليأس حتى لو بدأت متأخر  
+- التكرار والمراجعة هم سر التفوق في العربي  
+- حل على كل درس عدد كبير من الأسئلة عشان يثبت  
+- ركز جدًا على حل قطع النحو يوميًا لأنها أهم جزء  
+- لازم تتعرض لكل أشكال وتريكات النحو عشان متتفاجئش في الامتحان  
+- حل أكتر = فهم واستنتاج أفضل  
+- تابع وليد محسن ورضا الفاروق لتريكات الحفظ والفهم  
+- خصص وقت يومي ثابت للنحو والقطع  
+"""],
+
+
+ "english": ["""
+- Read the passage once for general understanding  
+- Identify keywords in the question  
+- Answer from the text, not guessing  
+- Practice reading daily  
+- Review vocabulary regularly  
+- Solve URT questions with time limit  
+- Dr. Akef explanations help a lot  
+
+- حتى لو هتبدأ إنجليزي في المراجعة متتوترش  
+- أهم حاجة تكون فاهم الجرامر كويس  
+- ويكون عندك حصيلة كلمات (vocabulary) كويسة  
+- حل قطع URT كتير جدًا هو اللي هيظبط مستواك  
+- مع الوقت هتقدر تستنتج معاني الكلمات الصعبة من السياق  
+- الاستمرارية في الحل أهم من أي حاجة تانية
+"""],
+
+"french":["""
+- Study consistently without long breaks  
+- Regular revision is very important  
+- Solve many exercises  
+- Focus on exam tricks and patterns  
+- Understand before memorizing  
+- Follow good teaching methods  
+- Daily practice even if small  
+"""],
+
+"german":["""
+- Understand full sentence first  
+- Focus on sentence structure  
+- Memorize vocabulary daily  
+- Practice grammar rules  
+- Read simple texts  
+- Solve URT questions regularly """] ,
+
+
+ "math":["""
+- Understand idea before solving  
+- Solve step-by-step examples  
+- Start easy then increase difficulty  
+- Understand formulas not memorize  
+- Practice URT daily  
+- Learn from mistakes """], 
+
+
+"physics":["""
+- MOST IMPORTANT: Solve problems a lot  
+- Understand concepts not memorize  
+- Connect formulas with real life  
+- Solve many types of questions  
+- Focus on steps not answers  
+- Pay attention to units  
+- Practice under time pressure  """],
+
+
+ "chemistry": ["""
+- Focus on solving a large number of equations and problems, not just writing them  
+- The more problems you solve, the more confident you will feel in exams  
+- Practice different types of questions on each topic (especially calculations)  
+- Understand the reaction logic before memorizing anything  
+- Train yourself to recognize patterns in questions  
+- Solve past exams and URT questions regularly  
+- Review your mistakes carefully and learn from them  
+- Consistent practice is the key to strong performance in chemistry  
+"""],
+
+
+ "biology": ["""
+- Focus on understanding + memorizing information  
+- The more information you have, the stronger you become in exams  
+- Whether you gain knowledge from studying or solving, both are important  
+- Connect systems together to build a complete picture  
+- Draw diagrams to help memory  
+- Review terms regularly  
+- Solve application questions to test your understanding  
+- Revise consistently before exams  
+"""],
+
+
+"geology": ["""
+- Understand concepts clearly, not just memorize  
+- The more information you collect, the easier the subject becomes  
+- Knowledge can come from both studying and solving questions  
+- Connect natural phenomena together  
+- Use diagrams for better understanding  
+- Review scientific terms regularly  
+- Solve applied questions for each lesson  
+- Practice URT under time pressure  
+"""],
+
+
+"mechanics":["""
+- Understand motion & forces first  
+- Draw diagrams for every question  
+- Learn relationships (speed, time, acceleration)  
+- Solve gradually from easy to hard  
+- Focus on solving steps  
+- Practice URT under pressure  """],
+
+"urt": ["""
+- Get enough sleep before the exam to keep your focus high  
+- Stay calm and don’t panic during the exam  
+- Read each question carefully before answering  
+- Start with easy questions to build confidence  
+
+- Practice passages continuously before the exam  
+- The more you practice, the faster and better you understand  
+- Don’t get stuck on a hard question, skip and come back later  
+- Manage your time wisely across all questions  
+
+- Tricks:
+- Look for keywords in the question first  
+- Understand the general idea of the passage before details  
+- Answers are usually in the text, not from guessing  
+- If two choices are similar, pick the one that fits the context  
+- Eliminate wrong answers to reach the correct one faster  
+- Don’t change your answer unless you are 100% sure  
+"""]
+    }
+    time_revisionplan_responses = {
+
+   "daily time manegement":["""
+- ابدأ يومك بتحديد 3-5  أهداف واضحة فقط  
+- ذاكر بنظام 50 دقيقة + 10 دقايق راحة (Pomodoro)  
+- ابدأ بالمادة الأصعب أولًا في اليوم  
+- اقفل المشتتات (موبايل - سوشيال ميديا)  
+- خصص وقت ثابت يوميًا لحل أسئلة  urt  
+- راجع آخر 30 دقيقة من اليوم على اللي ذاكرته """] ,
+
+
+"weekly revision plan":["""
+- يوم أسبوعيًا للمراجعة الشاملة بدون دروس جديدة  
+- مراجعة كل المواد بشكل سريع ومنظم  
+- حل امتحان urt  كامل لكل مادة مرة أسبوعيًا  
+- تجميع الأخطاء ومراجعتها بشكل منفصل  
+- تقوية نقاط الضعف بدل إعادة كل المنهج  
+- تلخيص كل مادة في صفحة أو ورقة صغيرة  """],
+
+
+"monthly revision plan" :["""
+
+Week 1:
+- تثبيت الأساسيات وإنهاء المنهج  
+- تقسيم المواد لمهام صغيرة يوميًا  
+- إنهاء أي أجزاء ناقصة من المنهج  
+- مذاكرة + فهم + تلخيص سريع لكل درس  
+- حل أسئلة مباشرة بعد كل درس  
+- بداية حل URT بشكل خفيف يوميًا  
+
+Week 2:
+- تثبيت المعلومات وتحويلها لحل  
+- مراجعة كل الدروس اللي اتذاكرت  
+- زيادة حل أسئلة URT يوميًا  
+- تحليل الأخطاء في كل مادة  
+- تركيز على المواد الضعيفة  
+- عمل mini tests قصيرة  
+
+Week 3:
+- محاكاة الامتحانات الحقيقية  
+- حل امتحانات كاملة بوقت محدد  
+- التدريب على ضغط الوقت  
+- تحليل كل امتحان بعد الحل  
+- تقليل المذاكرة النظرية وزيادة الحل  
+- تثبيت الأفكار الأساسية فقط  
+- مراجعة الأخطاء المتكررة  
+
+Week 4:
+- مراجعة نهائية + تثبيت + هدوء  
+- مراجعة الملخصات فقط  
+- حل نماذج خفيفة للحفاظ على السرعة  
+- مراجعة الأخطاء الشائعة  
+- عدم فتح أي مصادر جديدة  
+- التركيز على الثقة وتقليل التوتر  
+- تنظيم النوم قبل الامتحانات  """],
+
+
+ "study rules":["""
+- ما تذاكرش أكتر من 3 مواد في اليوم  
+- مادة صعبة + مادة متوسطة + مادة سهلة  
+- كل يوم لازم فيه حل URT  
+- التعلم + التطبيق أهم من الحفظ  
+- الاستمرارية أهم من عدد الساعات  
+- المراجعة أهم من المذاكرة الجديدة في آخر الشهر  """],
+    
+} 
+
+    def __init__(self):
+     self.greeted=False
+    def greet(self):
+      if not self.greeted:
+        st.write("Hello, I'm a chatbot created by EX-STEMer and I'm here to help you get through this remaining period and achieve the best results😀.")  
+        self.greeted=True 
+
+    def get_response1(self, user_input):
+     user_input=user_input.lower() 
+     for key,value in self.mentalhealth_responses.items():
+       if key in user_input.lower():
+        return value 
+     return f"I didn't understand. Did you mean: {list(self.mentalhealth_responses.keys())}"  
+
+
+    def get_response2(self,user_input):
+     user_input=user_input.lower()
+     for key , value in self.study_tips_responses.items():
+        if key in user_input.lower():
+         return "\n".join(value)
+
+     return f"I didn't understand. Did you want to know how to study {list(self.study_tips_responses.keys())}"    
+   
+    def get_responses3(self,user_input):
+     user_input=user_input.lower()
+     for key , value in self.time_revisionplan_responses.items():
+      if key in user_input.lower():
+        return "\n".join(value)  
+     return f"I didn't understand. Did you want advices about: {list(self.time_revisionplan_responses.keys())}"
+   
+
+    
+chatbot1=chatbot()
+ 
+
+
+st.set_page_config(
+    page_title="STEM Support Chatbot",
+    page_icon="🌱",
+    layout="centered"
+)
+st.title("🤖 GPT-4o - ChatBot for STEM students")
+if chatbot1.greet()  not in st.session_state:
+  chatbot1.greet()
+ 
+with st. sidebar:
+ selected=   option_menu("☰ Help Type",
+                ["Mental Support", 
+                   "Study tips",
+                   "Time & Revision Plan" ],
+                 menu_icon='menu_app'
+                , icons=['emoji-smile','book','calendar'] ,
+                 default_index=0 
+
+    ) 
+ 
+       
+    
+
+if selected=="Mental Support":
+  user_input=st.chat_input("Type here.......... ")
+  if user_input:
+     Answer=chatbot1.get_response1(user_input)  
+     try:
+        response = openai.chat.completions.create(
+          model="gpt-4o",
+        messages=[
+            {"role": "system", "content": "You are a helpful chatbot for STEM students...... "},
+             {
+                    "role": "user",
+                    "content": f"User problem: {user_input}\n Ans: {Answer}"
+                }
+        ]
+    )
+   
+        final_answer = response.choices[0].message.content
+     except:
+        final_answer=Answer
+        st.chat_message("user").markdown(user_input)
+        st.chat_message("assistant").markdown(final_answer)
+
+
+
+if selected=="Study tips":
+  user_input=st.chat_input("Type here.......... ")
+  if user_input:
+     Answer=chatbot1.get_response2(user_input)  
+     try:
+        response = openai.chat.completions.create(
+          model="gpt-4o",
+        messages=[
+            {"role": "system", "content": "You are a helpful chatbot for STEM students...... "},
+             {
+                    "role": "user",
+                    "content": f"User problem: {user_input}\n Ans: {Answer}"
+                }
+        ]
+    )
+   
+        final_answer = response.choices[0].message.content
+     except:
+        final_answer=Answer
+        st.chat_message("user").markdown(user_input)
+        st.chat_message("assistant").markdown(final_answer)
+
+
+
+
+if selected=="Time & Revision Plan":
+  user_input=st.chat_input("Type here.......... ")
+  if user_input:
+     Answer=chatbot1.get_responses3(user_input)  
+     try:
+        response = openai.chat.completions.create(
+          model="gpt-4o",
+        messages=[
+            {"role": "system", "content": "You are a helpful chatbot for STEM students...... "},
+             {
+                    "role": "user",
+                    "content": f"User problem: {user_input}\n Ans: {Answer}"
+                }
+        ]
+    )
+   
+        final_answer = response.choices[0].message.content
+     except:
+        final_answer=Answer
+        st.chat_message("user").markdown(user_input)
+        st.chat_message("assistant").markdown(final_answer)
+
+
+               
