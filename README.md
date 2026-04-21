@@ -70,9 +70,12 @@ OPENAI_API_KEY=your_api_key_here
  
  
  
-
 You can try the chatbot here:
- []
+ [https://gpt-4o-chatbot-using-app-syar6kmp7erkj8y5rmoqlz.streamlit.app/]
+
+and this file contains the main keywords you can search with:
+[https://drive.google.com/file/d/1Y6F4FzXBkEkeSlz1DysCeMwqpfC-Z1QO/view?usp=drive_link]
+ 
 
 
 
